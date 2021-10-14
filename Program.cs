@@ -24,16 +24,10 @@ namespace knapsack_problem
             Console.WriteLine("");
         }
 
-        static int MaskCalc(int N, bool[] mask, int[] array)
-        {
-            int result = 0;
-            for (int i = 0; i < N; i++)
-                result += mask[i] ? array[i] : 0;
-            return result;
-        }
-
         static bool[] GrayCode(int N, int M, int[] mass, int[] costs)
         {
+            int cur_mass = 0;
+            int cur_cost = 0;
             bool[] S = new bool[N];
             int[] b = new int[N + 1];
             for (int i = 0; i < N + 1; i++)
@@ -48,12 +42,9 @@ namespace knapsack_problem
                 // Console.Write("S: ");
                 // DoSomething(S);
 
-                int current_mass = MaskCalc(N, S, mass);
-                int current_cost = MaskCalc(N, S, costs);
-                // Console.WriteLine(current_mass + " " + current_cost);
-                if (current_mass <= M && current_cost > max_cost)
+                if (cur_mass <= M && cur_cost > max_cost)
                 {
-                    max_cost = current_cost;
+                    max_cost = cur_cost;
                     for (int i = 0; i < N; i++)
                         max_knapsack[i] = S[i];
                     // Console.Write(max_cost + "\nmax:");
@@ -67,6 +58,16 @@ namespace knapsack_problem
                     b[x - 1] = b[x];
                     b[x] = x + 1;
                     S[x - 1] = !S[x - 1];
+                    if (S[x - 1])
+                    {
+                        cur_mass += mass[x - 1];
+                        cur_cost += costs[x - 1];
+                    }
+                    else
+                    {
+                        cur_mass -= mass[x - 1];
+                        cur_cost -= costs[x - 1];
+                    }
                 }
             }
             while (x <= N);
@@ -84,7 +85,7 @@ namespace knapsack_problem
             var result = GrayCode(N, M, mass, costs);
             // DoSomething(result);
             for (int i = 0; i < N; i++)
-                Console.Write(result[i] ? mass[i] + "(" + costs[i] + ") " : "");
+                Console.Write(result[i] ? i + " " + mass[i] + "(" + costs[i] + ") " : "");
 
         }
     }
